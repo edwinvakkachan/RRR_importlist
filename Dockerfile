@@ -1,28 +1,27 @@
 # ---------- Dockerfile ----------
-# Use official lightweight Node.js image
-FROM node:22-alpine AS base
+FROM node:22-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy only package files first (for caching)
+# Copy package files first for caching
 COPY package*.json ./
 
-# Install only production dependencies
+# Install production dependencies
 RUN npm install --production
 
-# Copy all app source files
+# Copy source code
 COPY . .
 
-# Install lightweight process manager & parallel runner
-RUN npm install -g concurrently dumb-init
+# Install dumb-init via apk (smaller and faster) + concurrently via npm (local)
+RUN apk add --no-cache dumb-init \
+ && npm install concurrently --no-save
 
-# Expose web server port
+# Expose web port
 EXPOSE 3000
 
-# Health check (optional)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=20s \
-  CMD wget -qO- http://localhost:3000/ || exit 1
+# Use dumb-init for clean process handling
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
-# Start both server.js and bot.js concurrently
-CMD ["dumb-init", "concurrently", "node server.js", "node bot.js"]
+# Run both server and bot concurrently
+CMD ["npx", "concurrently", "node server.js", "node bot.js"]
