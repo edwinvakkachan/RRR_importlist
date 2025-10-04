@@ -353,7 +353,7 @@ if (!fs.existsSync(publicDir)) {
 app.use(express.static(publicDir));
 
 // Default route - serve index.html
-app.get('/*', (req, res) => {
+app.get('/', (req, res) => {
   const indexPath = path.join(publicDir, 'index.html');
   if (fs.existsSync(indexPath)) {
     return res.sendFile(indexPath);
