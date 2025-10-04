@@ -353,13 +353,13 @@ if (!fs.existsSync(publicDir)) {
 app.use(express.static(publicDir));
 
 // Default route - serve index.html
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
   const indexPath = path.join(publicDir, 'index.html');
   if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).send('index.html not found in public directory');
+    return res.sendFile(indexPath);
   }
+  // fallback: helpful 404 if index missing
+  return res.status(404).send('index.html not found in public directory');
 });
 
 const PORT = process.env.PORT || 3000;
