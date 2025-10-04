@@ -1,5 +1,7 @@
 .env
 node_modules
-package.json
 logs
-public/app.js
+.git
+.gitignore
+
+
