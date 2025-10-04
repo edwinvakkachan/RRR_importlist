@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\edwin\\Documents\\Github\\rrr listing\\logs\\.95c737564c169511169b1e66c274642963ca86aa-audit.json",
+    "files": [
+        {
+            "date": 1759560772249,
+            "name": "C:\\Users\\edwin\\Documents\\Github\\rrr listing\\logs\\rrr-2025-10-04.log",
+            "hash": "9da52e3e94f4d2a6d96b5a12d8762e2f896e940f158918c708776d200c4de598"
+        }
+    ],
+    "hashType": "sha256"
+}
