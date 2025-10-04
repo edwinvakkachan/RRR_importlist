@@ -8,7 +8,7 @@ services:
     ports:
       - "3000:3000"
 
-    # 👇 Environment variables can now be added directly in Portainer UI
+    # Environment variables (you can edit directly in Portainer)
     environment:
       RADARR_BASE: ${RADARR_BASE}
       RADARR_APIKEY: ${RADARR_APIKEY}
@@ -20,6 +20,23 @@ services:
       BASIC_AUTH_PASS: ${BASIC_AUTH_PASS}
       PORT: ${PORT:-3000}
 
+    # ✅ Volumes for persistence and easy updates
     volumes:
-      - ./logs:/app/logs
+      # Mount your host 'public' folder into the container (so /app/public updates instantly)
       - ./public:/app/public
+
+      # Persist logs (to inspect from Portainer or host)
+      - ./logs:/app/logs
+
+      # Optional: if you use a .env file outside (for local testing)
+      # uncomment the next line to mount it inside the container
+      # - ./.env:/app/.env:ro
+
+    # Optionally connect to same network as Radarr/Sonarr
+    # networks:
+    #   - media
+
+# Optional network for connecting Radarr/Sonarr containers
+# networks:
+#   media:
+#     external: true
