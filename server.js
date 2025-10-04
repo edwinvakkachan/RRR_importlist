@@ -341,15 +341,26 @@ app.post('/api/clearlogs', requireBasicAuth, (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+let publicDir = path.join(__dirname, 'public');
 
+// if /public doesn't exist under __dirname, try absolute /public
+if (!fs.existsSync(publicDir)) {
+  publicDir = '/public';
+  logger.warn(`Fallback: Using ${publicDir} as public directory`);
+}
 
+// Serve all static files (CSS, JS, images)
+app.use(express.static(publicDir));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
- 
+// Default route - serve index.html
+app.get('*', (req, res) => {
+  const indexPath = path.join(publicDir, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('index.html not found in public directory');
+  }
 });
 
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => logger.info(`Server started on http://localhost:${PORT}`));
+app.listen(PORT, () => logger.info(`✅ Server started on http://localhost:${PORT}`));
