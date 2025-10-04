@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <h1>List: <%= name %></h1>
+  <p><a href="/">← Back</a></p>
+
+  <section>
+    <h2>Items</h2>
+    <ul id="items">
+      <% if(!items || items.length === 0){ %>
+        <li>(empty)</li>
+      <% } else { %>
+        <% items.forEach(function(it, idx){ %>
+          <li data-index="<%= idx %>">
+            <strong><%= it.source %>:</strong> <%= it.id %>
+            <button class="del" data-index="<%= idx %>">Delete</button>
+          </li>
+        <% }) %>
+      <% } %>
+    </ul>
+
+    <form id="addItemForm">
+      <select name="source">
+        <option value="imdb">IMDB</option>
+        <option value="tmdb">TMDB</option>
+      </select>
+      <input name="id" placeholder="tt1234567 or 12345" required>
+      <button>Add</button>
+    </form>
+
+    <div style="margin-top:1rem">
+      <button id="syncRadarr">Sync to Radarr</button>
+      <button id="syncSonarr">Sync to Sonarr</button>
+    </div>
+
+    <pre id="log" style="white-space:pre-wrap;margin-top:1rem"></pre>
+  </section>
+</div>
+
+<%- include('partials/footer') %>

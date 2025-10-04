@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <h1>Your Lists</h1>
+
+  <div id="lists">
+    <% if(!lists || lists.length === 0){ %>
+      <p>No lists yet — create one below.</p>
+    <% } else { %>
+      <ul>
+        <% lists.forEach(function(name){ %>
+          <li><a href="/list/<%= encodeURIComponent(name) %>"><%= name %></a></li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+
+  <form id="newListForm">
+    <input name="name" placeholder="New list name" required>
+    <button>Create</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>
