@@ -8,7 +8,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - .env
+      - .env   # <-- must stay relative (NOT /data/compose/24/.env)
     volumes:
       - ./logs:/app/logs
       - ./public:/app/public

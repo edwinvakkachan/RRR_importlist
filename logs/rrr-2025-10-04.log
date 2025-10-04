@@ -59,3 +59,5 @@
 [2025-10-04 12:57:56] [INFO] Sent Telegram notification
 [2025-10-04 13:02:51] [INFO] Server started on http://localhost:3000
 [2025-10-04 13:03:19] [INFO] Server started on http://localhost:3000
+[2025-10-04 13:16:15] [WARN] radarrGetDefaults failed: connect ECONNREFUSED 192.168.0.90:7878
+[2025-10-04 13:16:17] [WARN] sonarrGetDefaults failed: connect ECONNREFUSED 192.168.0.90:8989
