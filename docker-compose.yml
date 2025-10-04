@@ -7,8 +7,19 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    env_file:
-      - .env   # <-- must stay relative (NOT /data/compose/24/.env)
+
+    # 👇 Environment variables can now be added directly in Portainer UI
+    environment:
+      RADARR_BASE: ${RADARR_BASE}
+      RADARR_APIKEY: ${RADARR_APIKEY}
+      SONARR_BASE: ${SONARR_BASE}
+      SONARR_APIKEY: ${SONARR_APIKEY}
+      TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      TELEGRAM_NOTIFY_CHAT_ID: ${TELEGRAM_NOTIFY_CHAT_ID}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER}
+      BASIC_AUTH_PASS: ${BASIC_AUTH_PASS}
+      PORT: ${PORT:-3000}
+
     volumes:
       - ./logs:/app/logs
       - ./public:/app/public
