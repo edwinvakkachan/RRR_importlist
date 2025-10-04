@@ -30,3 +30,30 @@
 [2025-10-04 12:41:57] [ERROR] search/series error: Request failed with status code 401
 [2025-10-04 12:46:02] [INFO] Server started on http://localhost:3000
 [2025-10-04 12:51:07] [INFO] Server started on http://localhost:3000
+[2025-10-04 12:51:17] [INFO] Server started on http://localhost:3000
+[2025-10-04 12:51:30] [WARN] sonarrGetDefaults failed: Request failed with status code 401
+[2025-10-04 12:51:32] [INFO] 🔍 search/series: "Paradise"
+[2025-10-04 12:51:32] [ERROR] search/series error: Request failed with status code 401
+[2025-10-04 12:51:34] [INFO] 🔍 search/movie: "Paradise"
+[2025-10-04 12:51:34] [INFO] 📡 Radarr lookup returned 20 results for "Paradise"
+[2025-10-04 12:53:52] [INFO] 🔍 search/series: "Monster"
+[2025-10-04 12:53:52] [ERROR] search/series error: Request failed with status code 401
+[2025-10-04 12:53:54] [INFO] 🔍 search/movie: "Monster"
+[2025-10-04 12:53:55] [INFO] 📡 Radarr lookup returned 20 results for "Monster"
+[2025-10-04 12:54:03] [INFO] 🎬 add/movie tmdb:504 title:Monster root:/data1tb/movie/english qp:1
+[2025-10-04 12:54:03] [INFO] ✅ Radarr add success tmdb:504 id:397
+[2025-10-04 12:54:04] [INFO] Sent Telegram notification
+[2025-10-04 12:55:00] [WARN] sonarrGetDefaults failed: Request failed with status code 401
+[2025-10-04 12:55:03] [INFO] 🔍 search/movie: "Paradise"
+[2025-10-04 12:55:03] [INFO] 📡 Radarr lookup returned 20 results for "Paradise"
+[2025-10-04 12:55:20] [INFO] 🎬 add/movie tmdb:152756 title:Paradise root:/data1tb/movie/english qp:1
+[2025-10-04 12:55:20] [INFO] ✅ Radarr add success tmdb:152756 id:398
+[2025-10-04 12:55:21] [INFO] Sent Telegram notification
+[2025-10-04 12:57:25] [INFO] 🔍 search/movie: "Paradise"
+[2025-10-04 12:57:25] [INFO] 📡 Radarr lookup returned 20 results for "Paradise"
+[2025-10-04 12:57:27] [WARN] sonarrGetDefaults failed: Request failed with status code 401
+[2025-10-04 12:57:29] [INFO] 🔍 search/movie: "Paradise 2024"
+[2025-10-04 12:57:30] [INFO] 📡 Radarr lookup returned 20 results for "Paradise 2024"
+[2025-10-04 12:57:54] [INFO] 🎬 add/movie tmdb:1170659 title:Paradise root:/data1tb/movie/malayalam qp:4
+[2025-10-04 12:57:55] [INFO] ✅ Radarr add success tmdb:1170659 id:399
+[2025-10-04 12:57:56] [INFO] Sent Telegram notification
