@@ -29,8 +29,14 @@
         <h1 class="h4 mb-4">RRR — Search & Add</h1>
 
         <div class="input-group mb-3">
-          <input id="query" type="text" class="form-control form-control-lg" placeholder="Search movie or series..." aria-label="Search" />
-        </div>
+  <input id="query" type="text" class="form-control form-control-lg" placeholder="Search movie or series..." aria-label="Search" />
+  <select id="searchType" class="form-select" style="max-width:140px">
+    <option value="name">Name</option>
+    <option value="tmdb">TMDB ID</option>
+    <option value="imdb">IMDB ID</option>
+  </select>
+</div>
+
 
         <div class="d-flex flex-wrap gap-2 mb-4">
           <button id="searchMovie" class="btn btn-primary flex-fill">Search Movie</button>
@@ -130,15 +136,35 @@
     el.innerHTML = arr.map(o => `<option value="${o[key]}">${o.name || o.path || o[key]}</option>`).join('');
   }
 
-  async function search(endpoint) {
+async function search(endpointKind) {
     const q = document.getElementById('query').value.trim();
+    const type = document.getElementById('searchType').value; // name|tmdb|imdb
     if (!q) return alert('Enter query');
-    const res = await fetch(`${API_BASE}api/${endpoint}`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ query:q })
-    });
-    const data = await res.json();
-    renderResults(data, endpoint);
+
+    let url = '';
+    let body = {};
+
+    // decide endpoint for movies or series
+    if (endpointKind === 'movie') {
+      if (type === 'name') { url = '/api/search/movie'; body = { query: q }; }
+      else if (type === 'tmdb') { url = '/api/search/movieByTmdb'; body = { tmdbId: q }; }
+      else if (type === 'imdb') { url = '/api/search/movieByImdb'; body = { imdbId: q }; }
+    } else { // series
+      if (type === 'name') { url = '/api/search/series'; body = { query: q }; }
+      else if (type === 'tmdb') { url = '/api/search/seriesByTmdb'; body = { tmdbId: q }; }
+      else if (type === 'imdb') { url = '/api/search/seriesByImdb'; body = { imdbId: q }; }
+    }
+
+    // call backend
+    try {
+      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const data = await res.json();
+      // pass an endpoint-like string so renderResults can decide which add flow to use
+      renderResults(data, endpointKind === 'movie' ? 'search/movie' : 'search/series');
+    } catch (e) {
+      console.error(e);
+      showToast('Search failed — check server logs.', 'danger');
+    }
   }
 
   function renderResults(list, endpoint) {
@@ -240,8 +266,8 @@
     setTimeout(()=>wrap.remove(),4000);
   }
 
-  document.getElementById('searchMovie').onclick = ()=>search('search/movie');
-  document.getElementById('searchSeries').onclick = ()=>search('search/series');
+   document.getElementById('searchMovie').onclick = ()=>search('movie');
+  document.getElementById('searchSeries').onclick = ()=>search('series');
   fetchMeta();
   </script>
 </body>

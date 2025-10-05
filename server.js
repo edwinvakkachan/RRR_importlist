@@ -237,6 +237,136 @@ app.post('/api/search/series', requireBasicAuth, async (req, res) => {
   }
 });
 
+// -------------------------
+// ID-based search endpoints
+// -------------------------
+
+// Movie by TMDB ID
+app.post('/api/search/movieByTmdb', requireBasicAuth, async (req, res) => {
+  try {
+    const { tmdbId } = req.body;
+    if (!tmdbId) return res.status(400).json({ error: 'tmdbId required' });
+    logger.info(`🔍 search/movieByTmdb: ${tmdbId}`);
+    // radarr lookup accepts plain tmdb id; prefixed term may also work but use numeric
+    const { data } = await radarr.get('/api/v3/movie/lookup', { params: { term: String(tmdbId) } });
+    const results = (Array.isArray(data) ? data : []).slice(0, 20).map(it => {
+      let imgs = [];
+      if (it.images && Array.isArray(it.images) && it.images.length) imgs = it.images.map(i => i.remoteUrl || i.url || i.coverUrl || i.path || i.posterPath).filter(Boolean);
+      else if (it.posterPath || it.backdropPath) imgs = [it.posterPath || it.backdropPath];
+      else if (it.remotePoster) imgs = [it.remotePoster];
+      const images = makeImageUrlsArray(imgs);
+      return {
+        title: it.title || it.titleSlug,
+        tmdbId: it.tmdbId,
+        year: it.year,
+        overview: it.overview,
+        imageUrl: images[0] || null,
+        images
+      };
+    });
+    res.json(results);
+  } catch (err) {
+    logger.error('search/movieByTmdb error: ' + safeString(err.response?.data || err.message));
+    res.status(500).json({ error: 'search failed', details: err.response?.data || err.message });
+  }
+});
+
+// Movie by IMDB ID
+app.post('/api/search/movieByImdb', requireBasicAuth, async (req, res) => {
+  try {
+    const { imdbId } = req.body;
+    if (!imdbId) return res.status(400).json({ error: 'imdbId required' });
+    logger.info(`🔍 search/movieByImdb: ${imdbId}`);
+    const term = imdbId.startsWith('tt') ? `imdb:${imdbId}` : imdbId;
+    const { data } = await radarr.get('/api/v3/movie/lookup', { params: { term } });
+    const results = (Array.isArray(data) ? data : []).slice(0, 20).map(it => {
+      let imgs = [];
+      if (it.images && Array.isArray(it.images) && it.images.length) imgs = it.images.map(i => i.remoteUrl || i.url || i.coverUrl || i.path || i.posterPath).filter(Boolean);
+      else if (it.posterPath || it.backdropPath) imgs = [it.posterPath || it.backdropPath];
+      else if (it.remotePoster) imgs = [it.remotePoster];
+      const images = makeImageUrlsArray(imgs);
+      return {
+        title: it.title || it.titleSlug,
+        tmdbId: it.tmdbId,
+        year: it.year,
+        overview: it.overview,
+        imageUrl: images[0] || null,
+        images
+      };
+    });
+    res.json(results);
+  } catch (err) {
+    logger.error('search/movieByImdb error: ' + safeString(err.response?.data || err.message));
+    res.status(500).json({ error: 'search failed', details: err.response?.data || err.message });
+  }
+});
+
+// Series by TMDB ID
+app.post('/api/search/seriesByTmdb', requireBasicAuth, async (req, res) => {
+  try {
+    const { tmdbId } = req.body;
+    if (!tmdbId) return res.status(400).json({ error: 'tmdbId required' });
+    logger.info(`🔍 search/seriesByTmdb: ${tmdbId}`);
+    const { data } = await sonarr.get('/api/v3/series/lookup', { params: { term: String(tmdbId) } });
+    const results = (Array.isArray(data) ? data : []).slice(0, 20).map(item => {
+      let imgs = [];
+      if (item.series && item.series.images && Array.isArray(item.series.images) && item.series.images.length) {
+        imgs = item.series.images.map(i => i.remoteUrl || i.url || i.coverUrl || i.path || i.posterPath).filter(Boolean);
+      } else if (item.images && Array.isArray(item.images) && item.images.length) {
+        imgs = item.images.map(i => i.remoteUrl || i.url || i.coverUrl || i.path || i.posterPath).filter(Boolean);
+      } else if (item.imageUrl) {
+        imgs = [item.imageUrl];
+      } else if (item.remotePoster) {
+        imgs = [item.remotePoster];
+      }
+      const images = makeImageUrlsArray(imgs);
+      const tvdbId = item.tvdbId || item.series?.tvdbId || null;
+      const imdbId = item.imdbId || item.series?.imdbId || null;
+      const title = item.title || item.seriesTitle || item.series?.title || item.name || null;
+      const year = item.year || item.series?.year || null;
+      return { title, tvdbId, imdbId, year, overview: item.overview || item.series?.overview, imageUrl: images[0] || null, images, raw: item };
+    });
+    res.json(results);
+  } catch (err) {
+    logger.error('search/seriesByTmdb error: ' + safeString(err.response?.data || err.message));
+    res.status(500).json({ error: 'search failed', details: err.response?.data || err.message });
+  }
+});
+
+// Series by IMDB ID
+app.post('/api/search/seriesByImdb', requireBasicAuth, async (req, res) => {
+  try {
+    const { imdbId } = req.body;
+    if (!imdbId) return res.status(400).json({ error: 'imdbId required' });
+    logger.info(`🔍 search/seriesByImdb: ${imdbId}`);
+    const term = imdbId.startsWith('tt') ? `imdb:${imdbId}` : imdbId;
+    const { data } = await sonarr.get('/api/v3/series/lookup', { params: { term } });
+    const results = (Array.isArray(data) ? data : []).slice(0, 20).map(item => {
+      let imgs = [];
+      if (item.series && item.series.images && Array.isArray(item.series.images) && item.series.images.length) {
+        imgs = item.series.images.map(i => i.remoteUrl || i.url || i.coverUrl || i.path || i.posterPath).filter(Boolean);
+      } else if (item.images && Array.isArray(item.images) && item.images.length) {
+        imgs = item.images.map(i => i.remoteUrl || i.url || i.coverUrl || i.path || i.posterPath).filter(Boolean);
+      } else if (item.imageUrl) {
+        imgs = [item.imageUrl];
+      } else if (item.remotePoster) {
+        imgs = [item.remotePoster];
+      }
+      const images = makeImageUrlsArray(imgs);
+      const tvdbId = item.tvdbId || item.series?.tvdbId || null;
+      const imdb = item.imdbId || item.series?.imdbId || null;
+      const title = item.title || item.seriesTitle || item.series?.title || item.name || null;
+      const year = item.year || item.series?.year || null;
+      return { title, tvdbId, imdbId: imdb, year, overview: item.overview || item.series?.overview, imageUrl: images[0] || null, images, raw: item };
+    });
+    res.json(results);
+  } catch (err) {
+    logger.error('search/seriesByImdb error: ' + safeString(err.response?.data || err.message));
+    res.status(500).json({ error: 'search failed', details: err.response?.data || err.message });
+  }
+});
+
+
 // Add movie & add series endpoints (unchanged behavior)
 app.post('/api/add/movie', requireBasicAuth, async (req, res) => {
   try {
