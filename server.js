@@ -471,26 +471,31 @@ app.post('/api/clearlogs', requireBasicAuth, (req, res) => {
   }
 });
 
-let publicDir = path.join(__dirname, 'public');
-
-// if /public doesn't exist under __dirname, try absolute /public
+// --------- Static assets + EJS view engine ---------
+const publicDir = path.join(__dirname, 'public');
 if (!fs.existsSync(publicDir)) {
-  publicDir = '/public';
-  logger.warn(`Fallback: Using ${publicDir} as public directory`);
+  logger.warn(`Public directory not found at ${publicDir}. Static assets won't be served.`);
+} else {
+  logger.info(`Serving static files from ${publicDir}`);
+  app.use(express.static(publicDir));
 }
 
-// Serve all static files (CSS, JS, images)
-app.use(express.static(publicDir));
+// Set up EJS as the view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// Default route - serve index.html
+// Root route - render views/index.ejs
 app.get('/', (req, res) => {
-  const indexPath = path.join(publicDir, 'index.html');
-  if (fs.existsSync(indexPath)) {
-    return res.sendFile(indexPath);
-  }
-  // fallback: helpful 404 if index missing
-  return res.status(404).send('index.html not found in public directory');
+  // you can pass dynamic values here later, e.g. { title: 'RRR — Search & Add' }
+  return res.render('index', { });
 });
+
+// If this is a single-page app and you want client-side routing to work
+// for unknown paths, return index.ejs for any non-API route:
+app.get(/^\/(?!api).*/, (req, res) => {
+  return res.render('index', { });
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => logger.info(`✅ Server started on http://localhost:${PORT}`));
